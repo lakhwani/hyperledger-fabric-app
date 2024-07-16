@@ -12,7 +12,7 @@ We need to use the latest 2.4.1 release as this contains some improvements to ma
 
 - The docker image for the peer contains a builder for chaincode-as-a-service preconfigured. This is named 'ccaasbuilder'. This removes the need to build your own external builder and repackage and configure the peer
 - The `ccaasbuilder` applications are included in the binary tgz archive download for use in other circumstances. The `sampleconfig/core.yaml` is updated as well to refer to 'ccaasbuilder'
-- The 2.4.1 Java Chaincode release has been updated to remove the need to write a custom bootstrap main class, similar  to the Node.js Chaincode. It is intended that this will be added to the go chaincode as well.
+- The 2.4.1 Java Chaincode release has been updated to remove the need to write a custom bootstrap main class, similar to the Node.js Chaincode. It is intended that this will be added to the go chaincode as well.
 
 ## End-to-end with the the test-network
 
@@ -36,7 +36,7 @@ cd test-network
 
 You can run other variants of this command, eg to use CouchDB or CAs, without affecting the '-as-a-service' feature. The three keys steps are:
 
-- Build a docker image of the contract. Both `/asset-transfer-basic/chaincode-typescript` and `/asset-transfer-basic/chaincode-java` have been updated with Dockerfiles
+- Build a docker image of the contract. Both `/app/chaincode-typescript` and `/app/chaincode-java` have been updated with Dockerfiles
 - Install, Approve, and Commit a chaincode definition. This is unchanged, but the chaincode package contains connection information (hostname,port,tls certificates etc.), not code
 - Start the docker container(s) containing the contract
 
@@ -45,7 +45,7 @@ Note that the order listed isn't mandatory. The key thing is that the containers
 This sequence can be run as follows
 
 ```bash
-./network.sh deployCCAAS  -ccn basicts -ccp ../asset-transfer-basic/chaincode-typescript
+./network.sh deployCCAAS  -ccn basicts -ccp ../app/chaincode-typescript
 ```
 
 This is very similar to the `deployCC` command, it needs the name, and path. But also needs to have the port the chaincode container is going to use. As each container is on the `fabric-test` network, you might wish to alter this so there are no collisions with other chaincode containers.
@@ -69,15 +69,15 @@ export FABRIC_CFG_PATH=${PWD}/../config
 peer chaincode query -C mychannel -n basicts -c '{"Args":["org.hyperledger.fabric:GetMetadata"]}' | jq
 ```
 
-If you don't have `jq` installed omit `| jq`.  The metadata shows the details of the deployed contract and is JSON, so jq makes it easier to read.  You can repeat the above commands for org2 to confirm that is working.
+If you don't have `jq` installed omit `| jq`. The metadata shows the details of the deployed contract and is JSON, so jq makes it easier to read. You can repeat the above commands for org2 to confirm that is working.
 
 To run the Java example, change the `deployCCAAS` command as follows. This will create two new containers.
 
 ```bash
-./network.sh deployCCAAS  -ccn basicj -ccp ../asset-transfer-basic/chaincode-java
+./network.sh deployCCAAS  -ccn basicj -ccp ../app/chaincode-java
 ```
 
-Note that all the asset-transfer-basic application samples use 'basic' as the chaincode name and need to be adjusted to use the name 'basicts' or 'basicj' accordingly, or you need to use the name 'basic' in the commands above.
+Note that all the app application samples use 'basic' as the chaincode name and need to be adjusted to use the name 'basicts' or 'basicj' accordingly, or you need to use the name 'basic' in the commands above.
 
 ### Troubleshooting
 
@@ -119,10 +119,10 @@ There is an option `-ccaasdocker false` that can be provided on the `deployCCAAS
 Run this command, and you'll see similar output
 
 ```bash
-./network.sh deployCCAAS  -ccn basicj -ccp ../asset-transfer-basic/chaincode-java -ccaasdocker false
+./network.sh deployCCAAS  -ccn basicj -ccp ../app/chaincode-java -ccaasdocker false
 #....
 Not building docker image; this the command we would have run
-docker build -f ../asset-transfer-basic/chaincode-java/Dockerfile -t basicj_ccaas_image:latest --build-arg CC_SERVER_PORT=9999 ../asset-transfer-basic/chaincode-java
+docker build -f ../app/chaincode-java/Dockerfile -t basicj_ccaas_image:latest --build-arg CC_SERVER_PORT=9999 ../app/chaincode-java
 #....
 Not starting docker containers; these are the commands we would have run
     docker run --rm -d --name peer0org1_basicj_ccaas                    --network fabric_test                   -e CHAINCODE_SERVER_ADDRESS=0.0.0.0:9999                   -e CHAINCODE_ID=basicj_1.0:59dcd73a14e2db8eab7f7683343ce27ac242b93b4e8075605a460d63a0438405 -e CORE_CHAINCODE_ID_NAME=basicj_1.0:59dcd73a14e2db8eab7f7683343ce27ac242b93b4e8075605a460d63a0438405                     basicj_ccaas_image:latest
@@ -134,10 +134,10 @@ Depending on your directory, and what you need to debug you might need to adjust
 
 The first thing needed is to build the docker image. Remember that so long as the peer can connect to the hostname:port given in the `connection.json` the actual packaging of the chaincode is not important to the peer. You are at liberty to adjust the dockerfiles given hgere.
 
-To manually build the docker image for the `asset-transfer-basic/chaincode-java`
+To manually build the docker image for the `app/chaincode-java`
 
 ```bash
-docker build -f ../asset-transfer-basic/chaincode-java/Dockerfile -t basicj_ccaas_image:latest --build-arg CC_SERVER_PORT=9999 ../asset-transfer-basic/chaincode-java
+docker build -f ../app/chaincode-java/Dockerfile -t basicj_ccaas_image:latest --build-arg CC_SERVER_PORT=9999 ../app/chaincode-java
 ```
 
 ### Starting the docker container
@@ -174,7 +174,7 @@ For Java please note:
 
 - Port 800 is forwarded, the debug port for the JVM
 - `-e DEBUG=true` will trigger the node runtime to be started in debug mode. This is encoded in the `docker/docker-entrypoint.sh` script - this is an example and you may wish to remove this in production images for security
-- In the java command with the option to start the debugger is `java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8000 -jar /chaincode.jar`   Note the `0.0.0.0` as the debug port needs to be bound to all network adapters so the debugger can be attached from outside the container
+- In the java command with the option to start the debugger is `java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8000 -jar /chaincode.jar` Note the `0.0.0.0` as the debug port needs to be bound to all network adapters so the debugger can be attached from outside the container
 
 ## Running with multiple peers
 

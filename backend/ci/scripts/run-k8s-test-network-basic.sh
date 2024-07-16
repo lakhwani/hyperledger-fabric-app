@@ -16,15 +16,15 @@ export TEST_NETWORK_CHAINCODE_BUILDER=${CHAINCODE_BUILDER:-ccaas}
 export TEST_TAG=$(git describe)
 export TEST_NETWORK_KIND_CLUSTER_NAME=${TEST_NETWORK_KIND_CLUSTER_NAME:-kind}
 
-# asset-transfer-basic chaincode target
-export TEST_NETWORK_CHAINCODE_NAME=${TEST_NETWORK_CHAINCODE_NAME:-asset-transfer-basic}
-export TEST_NETWORK_CHAINCODE_PATH=${TEST_NETWORK_CHAINCODE_PATH:-$PWD/../asset-transfer-basic/chaincode-${CHAINCODE_LANGUAGE}}
-export TEST_NETWORK_CHAINCODE_IMAGE=${TEST_NETWORK_CHAINCODE_IMAGE:-fabric-samples/asset-transfer-basic/chaincode-${CHAINCODE_LANGUAGE}}
+# app chaincode target
+export TEST_NETWORK_CHAINCODE_NAME=${TEST_NETWORK_CHAINCODE_NAME:-app}
+export TEST_NETWORK_CHAINCODE_PATH=${TEST_NETWORK_CHAINCODE_PATH:-$PWD/../app/chaincode-${CHAINCODE_LANGUAGE}}
+export TEST_NETWORK_CHAINCODE_IMAGE=${TEST_NETWORK_CHAINCODE_IMAGE:-fabric-samples/app/chaincode-${CHAINCODE_LANGUAGE}}
 
 # gateway client application parameters
-export GATEWAY_CLIENT_APPLICATION_PATH=${GATEWAY_CLIENT_APPLICATION_PATH:-../asset-transfer-basic/application-gateway-${CLIENT_LANGUAGE}}
+export GATEWAY_CLIENT_APPLICATION_PATH=${GATEWAY_CLIENT_APPLICATION_PATH:-../app/application-gateway-${CLIENT_LANGUAGE}}
 export CHANNEL_NAME=${TEST_NETWORK_CHANNEL_NAME:-mychannel}
-export CHAINCODE_NAME=${TEST_NETWORK_CHAINCODE_NAME:-asset-transfer-basic}
+export CHAINCODE_NAME=${TEST_NETWORK_CHAINCODE_NAME:-app}
 export MSP_ID=${MSP_ID:-Org1MSP}
 export CRYPTO_PATH=${CRYPTO_PATH:-../../test-network-k8s/build/channel-msp/peerOrganizations/org1}
 export KEY_DIRECTORY_PATH=${KEY_DIRECTORY_PATH:-../../test-network-k8s/build/enrollments/org1/users/org1admin/msp/keystore}

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 CHAINCODE_LANGUAGE=${CHAINCODE_LANGUAGE:-go}
-CHAINCODE_PATH=${CHAINCODE_PATH:-../asset-transfer-basic}
+CHAINCODE_PATH=${CHAINCODE_PATH:-../app}
 
 function print() {
 	GREEN='\033[0;32m'
@@ -42,7 +42,7 @@ createNetwork
 print "Initializing Go application"
 export CHAINCODE_NAME=go_gateway
 deployChaincode
-pushd ../asset-transfer-basic/application-gateway-go
+pushd ../app/application-gateway-go
 print "Executing AssetTransfer.go"
 go run .
 popd
@@ -52,7 +52,7 @@ popd
 print "Initializing TypeScript application"
 export CHAINCODE_NAME=typescript_gateway
 deployChaincode
-pushd ../asset-transfer-basic/application-gateway-typescript
+pushd ../app/application-gateway-typescript
 npm install
 print "Start application"
 npm start
@@ -63,7 +63,7 @@ popd
 print "Initializing JavaScript application"
 export CHAINCODE_NAME=javascript_gateway
 deployChaincode
-pushd ../asset-transfer-basic/application-gateway-javascript
+pushd ../app/application-gateway-javascript
 npm install
 print "Start application"
 npm start
@@ -74,7 +74,7 @@ popd
 print "Initializing Java application"
 export CHAINCODE_NAME=java_gateway
 deployChaincode
-pushd ../asset-transfer-basic/application-gateway-java
+pushd ../app/application-gateway-java
 print "Executing Gradle Run"
 ./gradlew run
 popd
