@@ -22,12 +22,14 @@ export default function DownloadButton() {
   const fetchAsset = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get<Asset[]>(
+      const response = await axios.get<string>(
         "http://localhost:3000/query?channelid=mychannel&chaincodeid=basic&function=GetAllAssets"
       );
-      if (response.data && response.data.length > 0) {
-        console.log(response.data);
-        setAsset(response.data[0]);
+      const jsonString = response.data.replace("Response: ", "");
+      const assets: Asset[] = JSON.parse(jsonString);
+      if (assets && assets.length > 0) {
+        console.log(assets);
+        setAsset(assets[0]);
       } else {
         throw new Error("No assets found");
       }
@@ -39,9 +41,16 @@ export default function DownloadButton() {
     }
   };
 
+  const generateDownloadLink = (asset: Asset) => {
+    const blob = new Blob([JSON.stringify(asset, null, 2)], {
+      type: "application/json",
+    });
+    return URL.createObjectURL(blob);
+  };
+
   return (
     <VStack align="flex-start" spacing={4}>
-      <Text fontSize="sm">
+      <Text fontSize="md" paddingBottom={4}>
         CLICK THE DOWNLOAD BUTTON BELOW TO INSTALL
         <br />A COPY OF YOUR LICENSE AGREEMENT.
       </Text>
@@ -67,13 +76,13 @@ export default function DownloadButton() {
       ) : asset ? (
         <Button
           as="a"
-          href="#" // You may want to add a proper link here
-          download
+          href={generateDownloadLink(asset)}
+          download={`asset_${asset.assetID}.json`}
           bg="black"
           color="white"
           _hover={{ bg: "gray.800" }}
         >
-          {asset.owner}
+          Download
         </Button>
       ) : (
         <Button

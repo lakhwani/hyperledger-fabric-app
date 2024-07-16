@@ -11,17 +11,13 @@ export default function Home() {
         spacing={8}
         align="stretch"
         p={8}
-        maxWidth="800px"
+        paddingLeft={20}
         margin="0 auto"
       >
         <Text fontSize="3xl" fontWeight="bold" lineHeight="1.2">
-          ARTISTS SHOULD
+          ARTISTS SHOULD DETERMINE THEIR FUTURE
           <br />
-          DETERMINE THEIR FUTURE
-          <br />
-          AND THEIR VALUE, ON
-          <br />
-          THEIR OWN TERMS.
+          AND THEIR VALUE, ON THEIR OWN TERMS.
         </Text>
         <DownloadButton />
       </VStack>
