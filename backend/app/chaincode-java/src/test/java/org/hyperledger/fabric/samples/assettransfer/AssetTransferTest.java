@@ -63,18 +63,12 @@ public final class AssetTransferTest {
 
             assetList = new ArrayList<KeyValue>();
 
-            assetList.add(new MockKeyValue("asset1",
-                    "{ \"assetID\": \"asset1\", \"color\": \"blue\", \"size\": 5, \"owner\": \"Tomoko\", \"appraisedValue\": 300 }"));
-            assetList.add(new MockKeyValue("asset2",
-                    "{ \"assetID\": \"asset2\", \"color\": \"red\", \"size\": 5,\"owner\": \"Brad\", \"appraisedValue\": 400 }"));
-            assetList.add(new MockKeyValue("asset3",
-                    "{ \"assetID\": \"asset3\", \"color\": \"green\", \"size\": 10,\"owner\": \"Jin Soo\", \"appraisedValue\": 500 }"));
-            assetList.add(new MockKeyValue("asset4",
-                    "{ \"assetID\": \"asset4\", \"color\": \"yellow\", \"size\": 10,\"owner\": \"Max\", \"appraisedValue\": 600 }"));
-            assetList.add(new MockKeyValue("asset5",
-                    "{ \"assetID\": \"asset5\", \"color\": \"black\", \"size\": 15,\"owner\": \"Adrian\", \"appraisedValue\": 700 }"));
-            assetList.add(new MockKeyValue("asset6",
-                    "{ \"assetID\": \"asset6\", \"color\": \"white\", \"size\": 15,\"owner\": \"Michel\", \"appraisedValue\": 800 }"));
+            assetList.add(new MockKeyValue("doc123",
+                    "{ \"documentID\": \"doc123\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Alice\", \"serialNumber\": 101 }"));
+            assetList.add(new MockKeyValue("doc124",
+                    "{ \"documentID\": \"doc124\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Bob\", \"serialNumber\": 102 }"));
+            assetList.add(new MockKeyValue("doc125",
+                    "{ \"documentID\": \"doc125\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Charlie\", \"serialNumber\": 103 }"));
         }
 
         @Override
@@ -114,12 +108,15 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1"))
-                    .thenReturn("{ \"assetID\": \"asset1\", \"color\": \"blue\", \"size\": 5, \"owner\": \"Tomoko\", \"appraisedValue\": 300 }");
+            when(stub.getStringState("doc123"))
+                    .thenReturn(
+                            "{ \"documentID\": \"doc123\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Alice\", \"serialNumber\": 101 }");
 
-            Asset asset = contract.ReadAsset(ctx, "asset1");
+            Asset asset = contract.ReadAsset(ctx, "doc123");
 
-            assertThat(asset).isEqualTo(new Asset("asset1", "blue", 5, "Tomoko", 300));
+            assertThat(asset).isEqualTo(new Asset("doc123",
+                    "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf",
+                    "Alice", 101));
         }
 
         @Test
@@ -128,14 +125,14 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1")).thenReturn("");
+            when(stub.getStringState("doc123")).thenReturn("");
 
             Throwable thrown = catchThrowable(() -> {
-                contract.ReadAsset(ctx, "asset1");
+                contract.ReadAsset(ctx, "doc123");
             });
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
-                    .hasMessage("Asset asset1 does not exist");
+                    .hasMessage("Asset doc123 does not exist");
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("ASSET_NOT_FOUND".getBytes());
         }
     }
@@ -150,12 +147,12 @@ public final class AssetTransferTest {
         contract.InitLedger(ctx);
 
         InOrder inOrder = inOrder(stub);
-        inOrder.verify(stub).putStringState("asset1", "{\"appraisedValue\":300,\"assetID\":\"asset1\",\"color\":\"blue\",\"owner\":\"Tomoko\",\"size\":5}");
-        inOrder.verify(stub).putStringState("asset2", "{\"appraisedValue\":400,\"assetID\":\"asset2\",\"color\":\"red\",\"owner\":\"Brad\",\"size\":5}");
-        inOrder.verify(stub).putStringState("asset3", "{\"appraisedValue\":500,\"assetID\":\"asset3\",\"color\":\"green\",\"owner\":\"Jin Soo\",\"size\":10}");
-        inOrder.verify(stub).putStringState("asset4", "{\"appraisedValue\":600,\"assetID\":\"asset4\",\"color\":\"yellow\",\"owner\":\"Max\",\"size\":10}");
-        inOrder.verify(stub).putStringState("asset5", "{\"appraisedValue\":700,\"assetID\":\"asset5\",\"color\":\"black\",\"owner\":\"Adrian\",\"size\":15}");
-
+        inOrder.verify(stub).putStringState("doc123",
+                "{\"documentID\":\"doc123\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Alice\",\"serialNumber\":101}");
+        inOrder.verify(stub).putStringState("doc124",
+                "{\"documentID\":\"doc124\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Bob\",\"serialNumber\":102}");
+        inOrder.verify(stub).putStringState("doc125",
+                "{\"documentID\":\"doc125\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Charlie\",\"serialNumber\":103}");
     }
 
     @Nested
@@ -167,15 +164,18 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1"))
-                    .thenReturn("{ \"assetID\": \"asset1\", \"color\": \"blue\", \"size\": 5, \"owner\": \"Tomoko\", \"appraisedValue\": 300 }");
+            when(stub.getStringState("doc123"))
+                    .thenReturn(
+                            "{ \"documentID\": \"doc123\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Alice\", \"serialNumber\": 101 }");
 
             Throwable thrown = catchThrowable(() -> {
-                contract.CreateAsset(ctx, "asset1", "blue", 45, "Siobhán", 60);
+                contract.CreateAsset(ctx, "doc123",
+                        "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf",
+                        "Alice", 101);
             });
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
-                    .hasMessage("Asset asset1 already exists");
+                    .hasMessage("Asset doc123 already exists");
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("ASSET_ALREADY_EXISTS".getBytes());
         }
 
@@ -185,11 +185,15 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1")).thenReturn("");
+            when(stub.getStringState("doc123")).thenReturn("");
 
-            Asset asset = contract.CreateAsset(ctx, "asset1", "blue", 45, "Siobhán", 60);
+            Asset asset = contract.CreateAsset(ctx, "doc123",
+                    "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf",
+                    "Alice", 101);
 
-            assertThat(asset).isEqualTo(new Asset("asset1", "blue", 45, "Siobhán", 60));
+            assertThat(asset).isEqualTo(new Asset("doc123",
+                    "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf",
+                    "Alice", 101));
         }
     }
 
@@ -203,12 +207,10 @@ public final class AssetTransferTest {
 
         String assets = contract.GetAllAssets(ctx);
 
-        assertThat(assets).isEqualTo("[{\"appraisedValue\":300,\"assetID\":\"asset1\",\"color\":\"blue\",\"owner\":\"Tomoko\",\"size\":5},"
-                + "{\"appraisedValue\":400,\"assetID\":\"asset2\",\"color\":\"red\",\"owner\":\"Brad\",\"size\":5},"
-                + "{\"appraisedValue\":500,\"assetID\":\"asset3\",\"color\":\"green\",\"owner\":\"Jin Soo\",\"size\":10},"
-                + "{\"appraisedValue\":600,\"assetID\":\"asset4\",\"color\":\"yellow\",\"owner\":\"Max\",\"size\":10},"
-                + "{\"appraisedValue\":700,\"assetID\":\"asset5\",\"color\":\"black\",\"owner\":\"Adrian\",\"size\":15},"
-                + "{\"appraisedValue\":800,\"assetID\":\"asset6\",\"color\":\"white\",\"owner\":\"Michel\",\"size\":15}]");
+        assertThat(assets).isEqualTo(
+                "[{\"documentID\":\"doc123\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Alice\",\"serialNumber\":101},"
+                        + "{\"documentID\":\"doc124\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Bob\",\"serialNumber\":102},"
+                        + "{\"documentID\":\"doc125\",\"documentLink\":\"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\",\"owner\":\"Charlie\",\"serialNumber\":103}]");
 
     }
 
@@ -221,12 +223,13 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1"))
-                    .thenReturn("{ \"assetID\": \"asset1\", \"color\": \"blue\", \"size\": 5, \"owner\": \"Tomoko\", \"appraisedValue\": 300 }");
+            when(stub.getStringState("doc123"))
+                    .thenReturn(
+                            "{ \"documentID\": \"doc123\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Alice\", \"serialNumber\": 101 }");
 
-            String oldOwner = contract.TransferAsset(ctx, "asset1", "Dr Evil");
+            String oldOwner = contract.TransferAsset(ctx, "doc123", "Bob");
 
-            assertThat(oldOwner).isEqualTo("Tomoko");
+            assertThat(oldOwner).isEqualTo("Alice");
         }
 
         @Test
@@ -235,14 +238,14 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1")).thenReturn("");
+            when(stub.getStringState("doc123")).thenReturn("");
 
             Throwable thrown = catchThrowable(() -> {
-                contract.TransferAsset(ctx, "asset1", "Dr Evil");
+                contract.TransferAsset(ctx, "doc123", "Bob");
             });
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
-                    .hasMessage("Asset asset1 does not exist");
+                    .hasMessage("Asset doc123 does not exist");
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("ASSET_NOT_FOUND".getBytes());
         }
     }
@@ -256,12 +259,17 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1"))
-                    .thenReturn("{ \"assetID\": \"asset1\", \"color\": \"blue\", \"size\": 45, \"owner\": \"Arturo\", \"appraisedValue\": 60 }");
+            when(stub.getStringState("doc123"))
+                    .thenReturn(
+                            "{ \"documentID\": \"doc123\", \"documentLink\": \"https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf\", \"owner\": \"Alice\", \"serialNumber\": 101 }");
 
-            Asset asset = contract.UpdateAsset(ctx, "asset1", "pink", 45, "Arturo", 600);
+            Asset asset = contract.UpdateAsset(ctx, "doc123",
+                    "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF-updated.pdf",
+                    "Alice", 101);
 
-            assertThat(asset).isEqualTo(new Asset("asset1", "pink", 45, "Arturo", 600));
+            assertThat(asset).isEqualTo(new Asset("doc123",
+                    "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF-updated.pdf",
+                    "Alice", 101));
         }
 
         @Test
@@ -270,14 +278,16 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1")).thenReturn("");
+            when(stub.getStringState("doc123")).thenReturn("");
 
             Throwable thrown = catchThrowable(() -> {
-                contract.TransferAsset(ctx, "asset1", "Alex");
+                contract.UpdateAsset(ctx, "doc123",
+                        "https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF-updated.pdf",
+                        "Alice", 101);
             });
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
-                    .hasMessage("Asset asset1 does not exist");
+                    .hasMessage("Asset doc123 does not exist");
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("ASSET_NOT_FOUND".getBytes());
         }
     }
@@ -291,14 +301,14 @@ public final class AssetTransferTest {
             Context ctx = mock(Context.class);
             ChaincodeStub stub = mock(ChaincodeStub.class);
             when(ctx.getStub()).thenReturn(stub);
-            when(stub.getStringState("asset1")).thenReturn("");
+            when(stub.getStringState("doc123")).thenReturn("");
 
             Throwable thrown = catchThrowable(() -> {
-                contract.DeleteAsset(ctx, "asset1");
+                contract.DeleteAsset(ctx, "doc123");
             });
 
             assertThat(thrown).isInstanceOf(ChaincodeException.class).hasNoCause()
-                    .hasMessage("Asset asset1 does not exist");
+                    .hasMessage("Asset doc123 does not exist");
             assertThat(((ChaincodeException) thrown).getPayload()).isEqualTo("ASSET_NOT_FOUND".getBytes());
         }
     }

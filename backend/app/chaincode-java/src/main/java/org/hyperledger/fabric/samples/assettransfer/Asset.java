@@ -15,48 +15,40 @@ import com.owlike.genson.annotation.JsonProperty;
 public final class Asset {
 
     @Property()
-    private final String assetID;
+    private final String documentID;
 
     @Property()
-    private final String color;
-
-    @Property()
-    private final int size;
+    private final String documentLink;
 
     @Property()
     private final String owner;
 
     @Property()
-    private final int appraisedValue;
+    private final int serialNumber;
 
-    public String getAssetID() {
-        return assetID;
+    public String getDocumentID() {
+        return documentID;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public int getSize() {
-        return size;
+    public String getDocumentLink() {
+        return documentLink;
     }
 
     public String getOwner() {
         return owner;
     }
 
-    public int getAppraisedValue() {
-        return appraisedValue;
+    public int getSerialNumber() {
+        return serialNumber;
     }
 
-    public Asset(@JsonProperty("assetID") final String assetID, @JsonProperty("color") final String color,
-            @JsonProperty("size") final int size, @JsonProperty("owner") final String owner,
-            @JsonProperty("appraisedValue") final int appraisedValue) {
-        this.assetID = assetID;
-        this.color = color;
-        this.size = size;
+    public Asset(@JsonProperty("documentID") final String documentID,
+            @JsonProperty("documentLink") final String documentLink,
+            @JsonProperty("owner") final String owner, @JsonProperty("serialNumber") final int serialNumber) {
+        this.documentID = documentID;
+        this.documentLink = documentLink;
         this.owner = owner;
-        this.appraisedValue = appraisedValue;
+        this.serialNumber = serialNumber;
     }
 
     @Override
@@ -72,22 +64,31 @@ public final class Asset {
         Asset other = (Asset) obj;
 
         return Objects.deepEquals(
-                new String[] {getAssetID(), getColor(), getOwner()},
-                new String[] {other.getAssetID(), other.getColor(), other.getOwner()})
+                new String[] {
+                        getDocumentID(), getDocumentLink(), getOwner()
+                },
+                new String[] {
+                        other.getDocumentID(), other.getDocumentLink(), other.getOwner()
+                })
                 &&
                 Objects.deepEquals(
-                new int[] {getSize(), getAppraisedValue()},
-                new int[] {other.getSize(), other.getAppraisedValue()});
+                        new int[] {
+                                getSerialNumber()
+                        },
+                        new int[] {
+                                other.getSerialNumber()
+                        });
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAssetID(), getColor(), getSize(), getOwner(), getAppraisedValue());
+        return Objects.hash(getDocumentID(), getDocumentLink(), getOwner(), getSerialNumber());
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " [assetID=" + assetID + ", color="
-                + color + ", size=" + size + ", owner=" + owner + ", appraisedValue=" + appraisedValue + "]";
+        return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " [documentID=" + documentID
+                + ", documentLink="
+                + documentLink + ", owner=" + owner + ", serialNumber=" + serialNumber + "]";
     }
 }

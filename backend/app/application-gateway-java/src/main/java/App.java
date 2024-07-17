@@ -39,9 +39,11 @@ public final class App {
 	private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "basic");
 
 	// Path to crypto materials.
-	private static final Path CRYPTO_PATH = Paths.get("../../test-network/organizations/peerOrganizations/org1.example.com");
+	private static final Path CRYPTO_PATH = Paths
+			.get("../../test-network/organizations/peerOrganizations/org1.example.com");
 	// Path to user certificate.
-	private static final Path CERT_DIR_PATH = CRYPTO_PATH.resolve(Paths.get("users/User1@org1.example.com/msp/signcerts"));
+	private static final Path CERT_DIR_PATH = CRYPTO_PATH
+			.resolve(Paths.get("users/User1@org1.example.com/msp/signcerts"));
 	// Path to user private key directory.
 	private static final Path KEY_DIR_PATH = CRYPTO_PATH.resolve(Paths.get("users/User1@org1.example.com/msp/keystore"));
 	// Path to peer tls certificate.
@@ -52,7 +54,7 @@ public final class App {
 	private static final String OVERRIDE_AUTH = "peer0.org1.example.com";
 
 	private final Contract contract;
-	private final String assetId = "asset" + Instant.now().toEpochMilli();
+	private final String documentID = "doc123";
 	private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static void main(final String[] args) throws Exception {
@@ -113,7 +115,8 @@ public final class App {
 	}
 
 	public void run() throws GatewayException, CommitException {
-		// Initialize a set of asset data on the ledger using the chaincode 'InitLedger' function.
+		// Initialize a set of asset data on the ledger using the chaincode 'InitLedger'
+		// function.
 		initLedger();
 
 		// Return all the current assets on the ledger.
@@ -131,14 +134,15 @@ public final class App {
 		// Update an asset which does not exist.
 		updateNonExistentAsset();
 	}
-	
+
 	/**
 	 * This type of transaction would typically only be run once by an application
 	 * the first time it was started after its initial deployment. A new version of
 	 * the chaincode deployed later would likely not need to run an "init" function.
 	 */
 	private void initLedger() throws EndorseException, SubmitException, CommitStatusException, CommitException {
-		System.out.println("\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger");
+		System.out
+				.println("\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger");
 
 		contract.submitTransaction("InitLedger");
 
@@ -149,10 +153,11 @@ public final class App {
 	 * Evaluate a transaction to query ledger state.
 	 */
 	private void getAllAssets() throws GatewayException {
-		System.out.println("\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger");
+		System.out
+				.println("\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger");
 
 		var result = contract.evaluateTransaction("GetAllAssets");
-		
+
 		System.out.println("*** Result: " + prettyJson(result));
 	}
 
@@ -170,9 +175,10 @@ public final class App {
 	 * the ledger.
 	 */
 	private void createAsset() throws EndorseException, SubmitException, CommitStatusException, CommitException {
-		System.out.println("\n--> Submit Transaction: CreateAsset, creates new asset with ID, Color, Size, Owner and AppraisedValue arguments");
+		System.out.println(
+				"\n--> Submit Transaction: CreateAsset, creates new asset with documentID, documentLink, owner and serialNumber arguments");
 
-		contract.submitTransaction("CreateAsset", assetId, "yellow", "5", "Tom", "1300");
+		contract.submitTransaction("CreateAsset", "doc400", "http://example.com/doc400", "Alice", "400");
 
 		System.out.println("*** Transaction committed successfully");
 	}
@@ -186,7 +192,7 @@ public final class App {
 		System.out.println("\n--> Async Submit Transaction: TransferAsset, updates existing asset owner");
 
 		var commit = contract.newProposal("TransferAsset")
-				.addArguments(assetId, "Saptha")
+				.addArguments(documentID, "Bob")
 				.build()
 				.endorse()
 				.submitAsync();
@@ -194,7 +200,7 @@ public final class App {
 		var result = commit.getResult();
 		var oldOwner = new String(result, StandardCharsets.UTF_8);
 
-		System.out.println("*** Successfully submitted transaction to transfer ownership from " + oldOwner + " to Saptha");
+		System.out.println("*** Successfully submitted transaction to transfer ownership from " + oldOwner + " to Bob");
 		System.out.println("*** Waiting for transaction commit");
 
 		var status = commit.getStatus();
@@ -202,15 +208,15 @@ public final class App {
 			throw new RuntimeException("Transaction " + status.getTransactionId() +
 					" failed to commit with status code " + status.getCode());
 		}
-		
+
 		System.out.println("*** Transaction committed successfully");
 	}
 
 	private void readAssetById() throws GatewayException {
 		System.out.println("\n--> Evaluate Transaction: ReadAsset, function returns asset attributes");
 
-		var evaluateResult = contract.evaluateTransaction("ReadAsset", assetId);
-		
+		var evaluateResult = contract.evaluateTransaction("ReadAsset", documentID);
+
 		System.out.println("*** Result:" + prettyJson(evaluateResult));
 	}
 
@@ -220,10 +226,11 @@ public final class App {
 	 */
 	private void updateNonExistentAsset() {
 		try {
-			System.out.println("\n--> Submit Transaction: UpdateAsset asset70, asset70 does not exist and should return an error");
-			
-			contract.submitTransaction("UpdateAsset", "asset70", "blue", "5", "Tomoko", "300");
-			
+			System.out
+					.println("\n--> Submit Transaction: UpdateAsset doc70, doc70 does not exist and should return an error");
+
+			contract.submitTransaction("UpdateAsset", "doc70", "http://example.com/doc70", "Tomoko", "300");
+
 			System.out.println("******** FAILED to return an error");
 		} catch (EndorseException | SubmitException | CommitStatusException e) {
 			System.out.println("*** Successfully caught the error: ");

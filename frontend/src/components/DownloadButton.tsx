@@ -3,11 +3,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 interface Asset {
-  appraisedValue: number;
-  assetID: string;
-  color: string;
+  documentID: string;
+  documentLink: string;
   owner: string;
-  size: number;
+  serialNumber: number;
 }
 
 export default function DownloadButton() {
@@ -76,8 +75,7 @@ export default function DownloadButton() {
       ) : asset ? (
         <Button
           as="a"
-          href={generateDownloadLink(asset)}
-          download={`asset_${asset.assetID}.json`}
+          href="https://images-template-net.webpkgcache.com/doc/-/s/images.template.net/wp-content/uploads/2022/06/Menu-PDF.pdf"
           bg="black"
           color="white"
           _hover={{ bg: "gray.800" }}
